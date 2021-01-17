@@ -1,7 +1,7 @@
 # Reddit Stock Heatmap
 
 ## Database Schema
--[Layout](/Database Schema/db.png)
+-[Layout](Database Schema/db.png)
 
 ## APIs Used
 -[Reddit](https://www.reddit.com/dev/api/) 
