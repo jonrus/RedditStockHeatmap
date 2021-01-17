@@ -1,0 +1,31 @@
+<diagram program="umletino" version="14.4.0-SNAPSHOT"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>390</x><y>20</y><w>170</w><h>90</h></coordinates><panel_attributes>Symbols
+--
+-id: int auto increment required
+-symbol: string PK
+-text_name: string required
+-index: int FK to indexes</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>190</x><y>120</y><w>170</w><h>80</h></coordinates><panel_attributes>Subreddits
+--
+-id: int auto increment required
+-name: string PK
+-weight: int required default 0
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>620</x><y>140</y><w>170</w><h>80</h></coordinates><panel_attributes>Indexes
+--
+-id: int PK auto increment
+-text_name: string required
+-symbol: string required
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>190</x><y>20</y><w>170</w><h>80</h></coordinates><panel_attributes>RedditHeat
+--
+-symbol_id: int FK Symbols 
+-date: date required
+-heat: int required default 0
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>820</x><y>20</y><w>170</w><h>90</h></coordinates><panel_attributes>Users
+--
+-id: int auto increment required PK
+-username: string unique required
+-pw_hash: string required
+-email: string optional
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>620</x><y>20</y><w>170</w><h>90</h></coordinates><panel_attributes>User_Symbols
+--
+-user_id: int FK Users
+-stock_symbol: int FK Symbols
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>780</x><y>40</y><w>60</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>40;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>550</x><y>40</y><w>90</w><h>50</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>10;10;70;30</additional_attributes></element><element><id>Relation</id><coordinates><x>550</x><y>90</y><w>90</w><h>100</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>70;80;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>350</x><y>40</y><w>60</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-</panel_attributes><additional_attributes>40;10;10;10</additional_attributes></element></diagram>
