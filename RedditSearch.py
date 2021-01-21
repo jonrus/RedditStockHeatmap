@@ -7,16 +7,20 @@ class RedditSearch():
     """This Reddit API wrapper, is bare bones and provides autherzation and search features only."""
 
     def __init__(self, client_id, client_secret, user_agent, device_id):
+        self.session_client = requests.Session()
         self.__URL = "https://oauth.reddit.com"
         self.client_id = client_id
         self.client_secret = client_secret
         self.user_agent = user_agent
         self.device_id = device_id
-        self.headers = {
-            "User-Agent" : self.user_agent
-        }
+        # self.headers = {
+        #     "User-Agent" : self.user_agent
+        # }
         self.token = None
         self.authorized = False
+
+        #*Update session headers
+        self.session_client.headers.update({"User-Agent" : self.user_agent})
 
     def get_token(self):
         """Uses the 'Application Only OAuth' method to get a token from reddit.
@@ -27,9 +31,9 @@ class RedditSearch():
             "device_id" : self.device_id
         }
 
-        res = requests.post("https://www.reddit.com/api/v1/access_token", headers = self.headers, auth = auth_client, data = post_data)
+        res = self.session_client.post("https://www.reddit.com/api/v1/access_token", auth = auth_client, data = post_data)
         if res.status_code != requests.codes.ok:
-            print(f"Unable to get token - status code: {res.status_code}") #*DELETE
+            print(f"Unable to get token - status code: {res.status_code}") #!DELETE
             return False
 
         # Extract token and access type from returned JSON
@@ -38,7 +42,7 @@ class RedditSearch():
         token_type = j["token_type"]
 
         # Add auth to header
-        self.headers["Authorization"] = f"{token_type} {token}"
+        self.session_client.headers.update({"Authorization" : f"{token_type} {token}"})
         self.authorized = True
 
         return True
@@ -49,7 +53,6 @@ class RedditSearch():
         sort defaults to new can be one of ['relevance', 'hot', 'top', 'new', 'comments']
         verbose set to true will provide additonal console output.
         after/before must be set to a thing name - results are non inclusive"""
-        # TODO: Use sessions???
         # TODO: Add more error checking
         # TODO: Add rate limit checking
         
@@ -57,7 +60,7 @@ class RedditSearch():
         if limit > 100 or limit < 0:
             limit = 25
 
-        # Check is sort is an okay value
+        # Check if sort is an okay value
         if sort not in ['relevance', 'hot', 'top', 'new', 'comments']:
             return False #TODO Return a dict - will cause error on search_until
         
@@ -71,8 +74,8 @@ class RedditSearch():
             "before" : before,
             "after" : after
         }
-        res = requests.get(f"{self.__URL}/r/{subreddit}/search.json", params = params, headers = self.headers)
-        
+        res = self.session_client.get(f"{self.__URL}/r/{subreddit}/search.json", params = params)
+
         # Simple check and return false if the request was unable to complete
         if res.status_code != requests.codes.ok:
             return False #TODO Return a dict - will cause error on search_until
@@ -100,9 +103,10 @@ class RedditSearch():
                 "headers" : res.headers,
                 "url" : res.url,
                 "status_code" : res.status_code,
-                "rate_limit_used" : res.headers.get("X-Ratelimit-Used", None),
-                "rate_limit_remain" : res.headers.get("X-Ratelimit-Remaining", None),
-                "rate_limit_reset" : res.headers.get("X-Ratelimit-Reset", None),
+                "sent_headers" : res.request.headers,
+                "rate_limit_used" : res.headers.get("x-ratelimit-used", None),
+                "rate_limit_remain" : res.headers.get("x-ratelimit-remaining", None),
+                "rate_limit_reset" : res.headers.get("x-ratelimit-reset", None),
                 "first_thing" : None,
                 "first_thing_created_utc" : None,
                 "last_thing" : None,
@@ -116,9 +120,10 @@ class RedditSearch():
             "headers" : res.headers,
             "url" : res.url,
             "status_code" : res.status_code,
-            "rate_limit_used" : res.headers.get("X-Ratelimit-Used", None),
-            "rate_limit_remain" : res.headers.get("X-Ratelimit-Remaining", None),
-            "rate_limit_reset" : res.headers.get("X-Ratelimit-Reset", None),
+            "sent_headers" : res.request.headers,
+            "rate_limit_used" : res.headers.get("x-ratelimit-used", None),
+            "rate_limit_remain" : res.headers.get("x-ratelimit-remaining", None),
+            "rate_limit_reset" : res.headers.get("x-ratelimit-reset", None),
             "first_thing" : j['data']['children'][0]['data']['name'],
             "first_thing_created_utc" : j['data']['children'][0]['data']['created_utc'],
             "last_thing" : j['data']['children'][res_count - 1]['data']['name'],
