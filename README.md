@@ -13,3 +13,5 @@
 - See requirements.txt for required Python modules
   - Use pip install -r requirements.txt - for a quick install of all modules
 - [PostgresSQL](https://www.postgresql.org/) installed and configured on system
+- Configure example_secret.py (in Settings Dir) as required
+  - Rename example_secret.py to secret.py

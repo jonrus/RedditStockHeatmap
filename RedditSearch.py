@@ -1,8 +1,8 @@
 """Basic Reddit API wrapper, provides search and search_until a datatime"""
 import requests
 import requests.auth
-import secret #!Remove once testing is complete
-import helpers
+import Settings.secret as secret #!Remove once testing is complete
+import Helpers.helpers as helpers
 
 class RedditSearch():
     """This Reddit API wrapper, is bare bones and provides autherzation and search features only."""
@@ -14,10 +14,8 @@ class RedditSearch():
         self.client_secret = client_secret
         self.user_agent = user_agent
         self.device_id = device_id
-        # self.headers = {
-        #     "User-Agent" : self.user_agent
-        # }
         self.token = None
+        self.token_type = None
         self.authorized = False
 
         #*Update session headers
@@ -34,16 +32,16 @@ class RedditSearch():
 
         res = self.session_client.post("https://www.reddit.com/api/v1/access_token", auth = auth_client, data = post_data)
         if res.status_code != requests.codes.ok:
-            print(f"Unable to get token - status code: {res.status_code}") #!DELETE
+            self.authorized = False
             return False
 
         # Extract token and access type from returned JSON
         j = res.json() #TODO Add Error Catch
-        token = j["access_token"]
-        token_type = j["token_type"]
+        self.token = j["access_token"]
+        self.token_type = j["token_type"]
 
         # Add auth to header
-        self.session_client.headers.update({"Authorization" : f"{token_type} {token}"})
+        self.session_client.headers.update({"Authorization" : f"{self.token_type} {self.token}"})
         self.authorized = True
 
         return True
