@@ -1,6 +1,7 @@
+"""Basic Reddit API wrapper, provides search and search_until a datatime"""
 import requests
 import requests.auth
-import secret
+import secret #!Remove once testing is complete
 import helpers
 
 class RedditSearch():
@@ -252,7 +253,7 @@ class RedditSearch():
             
 
 
-if __name__ == "__main__":
+if __name__ == "__main__": #!Remove once testing is complete
     reddit = RedditSearch(secret.client_id, secret.client_secret, secret.user_agent, secret.device_id)
     reddit.get_token()
     # results = reddit.search(term = "luv", subreddit = "all", after = None, limit = 100, limit_to_sub = False, verbose = True)
