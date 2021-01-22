@@ -21,6 +21,8 @@ class RedditSearch():
         #*Update session headers
         self.session_client.headers.update({"User-Agent" : self.user_agent})
 
+    #TODO: Add __repr__()
+
     def get_token(self):
         """Uses the 'Application Only OAuth' method to get a token from reddit.
         """
