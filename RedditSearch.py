@@ -6,6 +6,8 @@ import Helpers.helpers as helpers
 
 class RedditSearch():
     """This Reddit API wrapper, is bare bones and provides autherzation and search features only."""
+    #TODO: Add __repr__()
+    #TODO: Add token experation checker/updater
 
     def __init__(self, client_id, client_secret, user_agent, device_id):
         self.session_client = requests.Session()
@@ -17,11 +19,10 @@ class RedditSearch():
         self.token = None
         self.token_type = None
         self.authorized = False
+        self.total_searches = 0
 
         #*Update session headers
         self.session_client.headers.update({"User-Agent" : self.user_agent})
-
-    #TODO: Add __repr__()
 
     def get_token(self):
         """Uses the 'Application Only OAuth' method to get a token from reddit.
@@ -56,7 +57,8 @@ class RedditSearch():
         after/before must be set to a thing name - results are non inclusive"""
         # TODO: Add more error checking
         # TODO: Add rate limit checking
-        
+        self.total_searches += 1 # Just to keep track of session searches
+
         # Simple error check to limit 'limit' to okay values
         if limit > 100 or limit < 0:
             limit = 25
@@ -145,19 +147,60 @@ class RedditSearch():
 
         return j
 
+    def search_slice(self, term, subreddit, start_time, end_time, max_searches = 100, limit_to_sub = True, verbose = False):
+        """This will perform several search_until calls to find the total number of things found
+        for the given time window
+        Expected Output;
+        {
+            "res_data" : {
+                "thing" : "thingName", #* Name of thing or None if not found
+                "total_found" : X, #* Sum total of all things that matched the search - valid even if max searches reached
+                "error" : "error string" #* Human readable error string or None if no error
+            }
+        }"""
 
-    def search_until(self, term, subreddit, until, max_searches = 100, limit_to_sub = True, verbose = False):
+        # Start looking for start thing - as if we can't find that thing, no need to continue
+        start_thing = self.search_until(term, subreddit, start_time, max_searches = max_searches, limit_to_sub = limit_to_sub, verbose = verbose)
+        if start_thing['res_data']['error']:
+            # Unable to find anything
+            return {
+                "res_data" : {
+                    "thing" : None,
+                    "total_found" : None,
+                    "error" : "Unable to find a thing with start_time - search halted"
+                }
+            }
+        end_thing = self.search_until(term, subreddit, end_time, after = start_thing['res_data']['thing'], max_searches = max_searches, limit_to_sub = limit_to_sub, verbose = verbose)
+        if end_thing['res_data']['error']:
+            return {
+                "res_data" : {
+                    "thing" : None,
+                    "total_found" : None,
+                    "error" : "Unable to find a thing with end_time - search halted"
+                }
+            }
+
+        return end_thing
+
+    def search_until(self, term, subreddit, until, after = None, max_searches = 100, limit_to_sub = True, nsfw = True, wiggle = 172800, verbose = False):
         """
         Important note: Due to reddit limitations this function will often fail when searching for more than five days.
             It really depends on the subreddit and how much activity there is.
             I've had good results with no more than five days on r/all, thus I would think less active subs would
             work further back in time.
             It provides very little error checking so use at your own risk...
-        Performs a normal search, until it finds a thing at or after the given datetime.
+        Performs a normal search, until it finds a thing at or after the given datetime (within the wiggle value).
         It then returns that thing name.
-        until is expected to a string with date and time;
-        example; '2021-01-01 12:00:00+0000'
-        
+        Arguments:
+            term: Search Term
+            subreddit: Name of subreddit to search with no prefix i.e. 'all' or 'investing'
+            until: string version of a datatime with format - '2021-01-01 12:00:00+0000'
+            after: reddit thing name to search after
+            max_searches: defaults to 100, make number of searches to perform
+            limit_to_sub: defaults to True, limits searches to subbreddit
+            nsfw: defaults to True, include NSFW results
+            wiggle: defaults to 172800, number of seconds to look *past* until before giving up on search
+            verbose: defaults to False - passed to search for verbose terminal output
         Expected Output;
         {
             "res_data" : {
@@ -173,11 +216,12 @@ class RedditSearch():
         """
 
         # Do some setup...
+        old_until = until
         until = helpers.str_to_epoch(until) # Convert datetime string to epoch time
         found = False
 
         # Perform the first search
-        search_res = self.search(term, subreddit, 100, True, verbose = verbose)
+        search_res = self.search(term = term, subreddit = subreddit, limit = max_searches, limit_to_sub = limit_to_sub, sort = "new", nsfw = nsfw, after = after, verbose = verbose)
         if search_res['res_data']['count'] == 0:
             return {
                 "res_data" : {
@@ -193,7 +237,6 @@ class RedditSearch():
         num_searches = 1
         total_found = 0
         while not found:
-            total_found += search_res['res_data']['count']
 
             #* Do some error checking
             if num_searches > max_searches:
@@ -216,46 +259,74 @@ class RedditSearch():
                     },
                     "thing_data" : None
                 }
-            
-            # Check if we found a thing older than we're looking for
+            #TODO: Wiggle
+            # Check if we found a thing as old OR older than we're looking for
             if search_res['res_data']['last_thing_created_utc'] <= until:
                 found = True
             else:
                 # Nothing found yet, do a new 'after' search
+                total_found += search_res['res_data']['count'] # Add all found items to the count
                 after_thing = search_res['res_data']['last_thing']
                 search_res = self.search(term, subreddit, 100, True, after = after_thing, verbose = verbose)
                 num_searches += 1
 
         # Loop to find the thing name that best matches our timeframe
-        for item in search_res['data']['children']:
-            if item['data']['created_utc'] <= until:
+        for i in range(search_res['res_data']['count']):
+            return_item = None
+            print(total_found)
+            if search_res['data']['children'][i]['data']['created_utc'] > until:
+                total_found += 1
+            elif search_res['data']['children'][i]['data']['created_utc'] == until:
+                # Wow what are the odds...
+                return_item = search_res['data']['children'][i]
+                total_found += 1
+            elif search_res['data']['children'][i]['data']['created_utc'] <= until:
+                # Found an item older than search time, return the item prior to it
+                return_item = search_res['data']['children'][i-1]
+                total_found += 1
+
+            if return_item:
+                # Build the return
                 return {
                     "res_data" : {
-                        "thing" : item['data']['name'],
-                        "thing_time" : item['data']['created_utc'],
+                        "thing" : return_item['data']['name'],
+                        "thing_time" : return_item['data']['created_utc'],
+                        "searc_time" : until,
+                        "thing_time_readable" : helpers.readable_time(return_item['data']['created_utc']),
                         "total_found" : total_found,
                         "error" : None
                     },
-                    "thing_data" : item
+                    "thing_data" : return_item
                 }
-        
-
-        # If we made it this far something is wrong....
-        return {
-            "res_data" : {
-                "thing" : None,
-                "thing_time" : None,
-                "total_found" : total_found,
-                "error" : "Unknown error :("
-            },
-            "thing_data" : None
-        }
-            
+        # for item in search_res['data']['children']:
+        #     total_found += 1
+        #     if item['data']['created_utc'] <= until:
+        #         print(f"Found Item: {helpers.readable_time(item['data']['created_utc'])}")
+        #         print(f"Searc Time: {old_until}")
+        #         return {
+        #             "res_data" : {
+        #                 "thing" : item['data']['name'],
+        #                 "thing_time" : item['data']['created_utc'],
+        #                 "searc_time" : until,
+        #                 "thing_time_readable" : helpers.readable_time(item['data']['created_utc']),
+        #                 "total_found" : total_found,
+        #                 "error" : None
+        #             },
+        #             "thing_data" : item
+        #         }
+        # # If we made it this far something is wrong....
+        # return {
+        #     "res_data" : {
+        #         "thing" : None,
+        #         "thing_time" : None,
+        #         "total_found" : 0,
+        #         "error" : "Unknown error :("
+        #     },
+        #     "thing_data" : None
+        # }
 
 
 if __name__ == "__main__": #!Remove once testing is complete
     reddit = RedditSearch(secret.client_id, secret.client_secret, secret.user_agent, secret.device_id)
     reddit.get_token()
-    # results = reddit.search(term = "luv", subreddit = "all", after = None, limit = 100, limit_to_sub = False, verbose = True)
-    # for item in results["data"]["children"]:
-    #     print(f"Name: {item['data']['name']} Sub: {item['data']['subreddit_name_prefixed']}@{helpers.readable_time(item['data']['created_utc'])}")
+    results = reddit.search_until(term = "TSLA", subreddit = "investing", until = "2021-01-20 00:00:00+0000")

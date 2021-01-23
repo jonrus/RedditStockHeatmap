@@ -10,9 +10,12 @@ class Subreddit(db.Model):
 
     __tablename__ = "subreddits"
 
-    id = db.Column(db.Integer, autoincrement = True, nullable = False)
-    name = db.Column(db.String(120), primary_key = True)
+    id = db.Column(db.Integer, autoincrement = True, nullable = False, primary_key = True)
+    name = db.Column(db.String(120), unique = True)
     weight = db.Column(db.Integer, nullable = False, default = 0)
+
+    def __repr__(self):
+        return f"<Subreddit: {self.name} id: {self.id} weight: {self.weight}>"
 
 class Symbol(db.Model):
     """Symbol model for stock ticker symbols"""
@@ -24,14 +27,18 @@ class Symbol(db.Model):
     name = db.Column(db.String(300), nullable = False)
     index_id = db.Column(db.Integer, db.ForeignKey('indexes.id', ondelete = 'cascade'))
     index = db.relationship("Index")
-    heat = db.relationship("RedditHeat")
+    heat = db.relationship("RedditHeat", backref = "symbol")
+
+    def __repr__(self):
+        return f"<Symbol: {self.symbol}, name: {self.name}>"
 
 class RedditHeat(db.Model):
-    """RedditHeat model for a ticker symbol"""
+    """RedditHeat model for a ticker symbol
+    Heat is just the number of search results for the symbol per day"""
 
     __tablename__ = "reddit_heat"
 
-    id = db.Column(db.Integer, primary_key = True, autoincrement = True)
+    id = db.Column(db.Integer, primary_key = True, autoincrement = True, nullable = False)
     symbol_id = db.Column(db.Integer, db.ForeignKey('symbols.id', ondelete = 'cascade'))
     date = db.Column(db.DateTime, nullable = False)
     heat = db.Column(db.Integer, nullable = False, default = 0)
@@ -44,6 +51,9 @@ class Index(db.Model):
     id = db.Column(db.Integer, autoincrement = True, primary_key = True)
     name = db.Column(db.String(300), nullable = False)
     symbol = db.Column(db.String(20), nullable = False)
+
+    def __repr__(self):
+        return f"<Index: {self.symbol}, {self.name}>"
 
 class User(db.Model):
     """User model - stores user info as well as helper methods to hash and auth a user"""
