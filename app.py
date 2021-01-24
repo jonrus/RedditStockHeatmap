@@ -1,4 +1,5 @@
 import os
+from datetime import date
 from flask import Flask, render_template, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
@@ -16,3 +17,9 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secret.flask_secret_key)
 toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
+
+@app.route("/")
+def root_route():
+    all = Symbol.query.all()
+    import pdb; pdb.set_trace()
+    return "working"

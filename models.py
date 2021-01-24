@@ -25,6 +25,7 @@ class Symbol(db.Model):
     id = db.Column(db.Integer, primary_key = True, autoincrement = True, nullable = False)
     symbol = db.Column(db.String(20), unique = True)
     name = db.Column(db.String(300), nullable = False)
+    default = db.Column(db.Boolean, nullable = False, default = False)
     index_id = db.Column(db.Integer, db.ForeignKey('indexes.id', ondelete = 'cascade'))
     index = db.relationship("Index")
     heat = db.relationship("RedditHeat", backref = "symbol")

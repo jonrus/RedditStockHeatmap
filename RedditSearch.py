@@ -135,13 +135,13 @@ class RedditSearch():
 
         # Debug Printing
         if verbose:
-            print(f"Generated URL: {j['res_data']['url']}")
+            # print(f"Generated URL: {j['res_data']['url']}")
             print(f"Rate Limit Used: {j['res_data']['rate_limit_used']}")
             print(f"Rate Limit Remain: {j['res_data']['rate_limit_remain']}")
             print(f"Rate Limit Reset: {j['res_data']['rate_limit_reset']}")
             # print(f"Response Headers: {j['res_data']['headers']}")
-            print(f"First Thing: {j['res_data']['first_thing']}")
-            print(f"Last Thing: {j['res_data']['last_thing']}")
+            # print(f"First Thing: {j['res_data']['first_thing']}")
+            # print(f"Last Thing: {j['res_data']['last_thing']}")
             # print(f"Response Text: {res.text}")
             print(f"Results: {j['res_data']['count']}")
 
@@ -182,7 +182,7 @@ class RedditSearch():
 
         return end_thing
 
-    def search_until(self, term, subreddit, until, after = None, max_searches = 100, limit_to_sub = True, nsfw = True, wiggle = 172800, verbose = False):
+    def search_until(self, term, subreddit, until, after = None, max_searches = 100, limit_to_sub = True, nsfw = True, verbose = False):
         """
         Important note: Due to reddit limitations this function will often fail when searching for more than five days.
             It really depends on the subreddit and how much activity there is.
@@ -216,7 +216,6 @@ class RedditSearch():
         """
 
         # Do some setup...
-        old_until = until
         until = helpers.str_to_epoch(until) # Convert datetime string to epoch time
         found = False
 
@@ -237,7 +236,6 @@ class RedditSearch():
         num_searches = 1
         total_found = 0
         while not found:
-
             #* Do some error checking
             if num_searches > max_searches:
                 return {
@@ -273,7 +271,6 @@ class RedditSearch():
         # Loop to find the thing name that best matches our timeframe
         for i in range(search_res['res_data']['count']):
             return_item = None
-            print(total_found)
             if search_res['data']['children'][i]['data']['created_utc'] > until:
                 total_found += 1
             elif search_res['data']['children'][i]['data']['created_utc'] == until:
@@ -298,32 +295,6 @@ class RedditSearch():
                     },
                     "thing_data" : return_item
                 }
-        # for item in search_res['data']['children']:
-        #     total_found += 1
-        #     if item['data']['created_utc'] <= until:
-        #         print(f"Found Item: {helpers.readable_time(item['data']['created_utc'])}")
-        #         print(f"Searc Time: {old_until}")
-        #         return {
-        #             "res_data" : {
-        #                 "thing" : item['data']['name'],
-        #                 "thing_time" : item['data']['created_utc'],
-        #                 "searc_time" : until,
-        #                 "thing_time_readable" : helpers.readable_time(item['data']['created_utc']),
-        #                 "total_found" : total_found,
-        #                 "error" : None
-        #             },
-        #             "thing_data" : item
-        #         }
-        # # If we made it this far something is wrong....
-        # return {
-        #     "res_data" : {
-        #         "thing" : None,
-        #         "thing_time" : None,
-        #         "total_found" : 0,
-        #         "error" : "Unknown error :("
-        #     },
-        #     "thing_data" : None
-        # }
 
 
 if __name__ == "__main__": #!Remove once testing is complete
