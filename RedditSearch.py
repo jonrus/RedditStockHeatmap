@@ -189,7 +189,8 @@ class RedditSearch():
             I've had good results with no more than five days on r/all, thus I would think less active subs would
             work further back in time.
             It provides very little error checking so use at your own risk...
-        Performs a normal search, until it finds a thing at or after the given datetime (within the wiggle value).
+        Performs a normal search, until it finds a thing at the given datetime. If no item is found at the exact time of until
+            it returns the next newest item, just inside of until.
         It then returns that thing name.
         Arguments:
             term: Search Term
