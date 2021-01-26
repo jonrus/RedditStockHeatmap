@@ -32,10 +32,21 @@ class Symbol(db.Model):
 
     def __repr__(self):
         return f"<Symbol: {self.symbol}, name: {self.name}>"
+    
+# class SymbolPrice(db.Model):
+#     """Model to map Symbol to a dates, open/closing price"""
+
+#     __tablename__ = "symbols_prices"
+
+#     id = db.Column(db.Integer, primary_key = True, autoincrement = True, nullable = False)
+#     date = db.Column(db.DateTime, nullable = False)
+#     open = db.Column(db.Float(precision = 2), nullable = False)
+#     close = db.Column(db.Float(precision = 2), nullable = False)
 
 class RedditHeat(db.Model):
     """RedditHeat model for a ticker symbol
-    Heat is just the number of search results for the symbol per day"""
+    Heat is just the number of search results for the symbol per day.
+    Also includes the stocks actual open/close price for the date (if any)"""
 
     __tablename__ = "reddit_heat"
 
@@ -43,6 +54,14 @@ class RedditHeat(db.Model):
     symbol_id = db.Column(db.Integer, db.ForeignKey('symbols.id', ondelete = 'cascade'))
     date = db.Column(db.DateTime, nullable = False)
     heat = db.Column(db.Integer, nullable = False, default = 0)
+    open_price = db.Column(db.Float(precision = 2), nullable = True)
+    close_price = db.Column(db.Float(precision = 2), nullable = True)
+    percent_change = db.Column(db.Float(precision = 2), nullable = True)
+
+
+
+    def __repr__(self):
+        return f"<RedditHeat: {self.date.month}/{self.date.day}/{self.date.year} {self.symbol.symbol} {self.heat}>"
 
 class Index(db.Model):
     """Index model for various stock market/indexes (S&P 500, DOW, etc...)"""
@@ -74,7 +93,7 @@ class UserSymbol(db.Model):
     __tablename__ = "users_symbols"
 
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete = 'cascade'), primary_key = True)
-    symbol_id = db.Column(db.Integer, db.ForeignKey('symbols.id', ondelete = 'cascade'))
+    symbol_id = db.Column(db.Integer, db.ForeignKey('symbols.id', ondelete = 'cascade'), primary_key = True)
 
 
 def connect_db(app):

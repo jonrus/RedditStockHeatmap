@@ -1,6 +1,6 @@
 import os
 from datetime import date
-from flask import Flask, render_template, request, flash, redirect, session
+from flask import Flask, render_template, jsonify, request, flash, redirect, session
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
 import Settings.secret as secret
@@ -18,8 +18,44 @@ toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
+#***********************************
+#* Helper Functions
+#***********************************
+def get_reddit_heat_by_date(date, cutoff = 1):
+    heat_data = []
+    all_heat = RedditHeat.query.filter_by(date=date).all()
+    for stock in all_heat:
+        if stock.heat >= cutoff:
+            heat_data.append(
+                {
+                    "Name" : stock.symbol.name,
+                    "Count" : stock.heat,
+                    "Symbol" : stock.symbol.symbol
+                }
+            )
+    return heat_data
+
+#***********************************
+#* Webview Routes
+#***********************************
 @app.route("/")
 def root_route():
-    all = Symbol.query.all()
+    return render_template("root.html")
+    
+
+
+#***********************************
+#* API Style Routes
+#***********************************
+@app.route("/api/latest", methods = ["GET"])
+def api_latest_route():
+    """Returns the newest (by date) complete set of Reddit Heat data as JSON"""
+    return jsonify(get_reddit_heat_by_date("2021-01-21"))
+
+
+#***********************************
+#* Testing Routes
+#***********************************
+@app.route("/render_all")
+def render_all_route():
     import pdb; pdb.set_trace()
-    return "working"

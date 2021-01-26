@@ -12,11 +12,12 @@ if reddit.get_token():
     for stock in all_stocks:
         total_heat = 0
         for sub in all_subs:
-            date_to_start = "2021-01-21 00:00:00+0000"
-            date_to_find = "2021-01-22 00:00:00+0000"
+            date_to_start = "2021-01-22 00:00:00+0000" # For our use, should be one day prior to date_to_find
+            date_to_find = "2021-01-21 00:00:00+0000"
             res = reddit.search_slice(term = stock.name, subreddit = sub.name, start_time = date_to_start, end_time = date_to_find)
             if res['res_data']['error']:
-                print(res['res_data'])
+                #TODO: Do something here...
+                pass
             else:
                 total_heat += res['res_data']['total_found']
                 print(f"Sub: {sub.name} Symbol: {stock.symbol} Found: {res['res_data']['total_found']}")

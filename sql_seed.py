@@ -295,6 +295,12 @@ for (sym, co, idex) in s_and_p_500:
 
     #Create the random heat for this symbol
     for day in seed_dates:
-        new_heat = RedditHeat(symbol_id = new_symbol.id, date = day, heat = randint(0,8))
+        new_heat = RedditHeat(
+            symbol_id = new_symbol.id,
+            date = day,
+            heat = randint(0,4),
+            open_price = (randint(0,100) + 0.01),
+            close_price = (randint(0, 100) + 0.02)
+            )
         db.session.add(new_heat)
         db.session.commit()
