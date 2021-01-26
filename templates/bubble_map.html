@@ -3,6 +3,7 @@
 {% block page_title %}Reddit Heat Index{% endblock %}
 
 {% block page_content %}
+<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 <div class="container">
     <div class="row">
         <div class="col-md">
@@ -10,7 +11,7 @@
                 <div class="mb-3">
                   <label for="startDatePicker" class="form-label">Show Reddit Heat for the chosen date.</label>
                   <input type="date" class="form-control" id="startDatePicker" aria-describedby="startDateHelp" min="{{oldest_data_date}}" max="{{newest_data_date}}" value="{{newest_data_date}}">
-                  <div id="startDateHelp" class="form-text"><p>Only dates with data are valid</p><p>Data prior to 01/22/2020 is random seed data!</p></div>
+                  <div id="startDateHelp" class="form-text"><p>Only dates with data are valid</p><p>Data prior to and including 01/20/2020 is random seed data!</p></div>
                 </div>
                 <div class="mb-3">
                   <label for="minRedditHeat" class="form-label">Minimum Reddit Heat</label>
@@ -21,12 +22,14 @@
               </form>
         </div>
         <div class="col-lg">
-            <main id="bubbleMap">
+            <div id="bubbleMap">
                 <div class="spinner-border text-success" role="status">
                     <span class="visually-hidden">Loading Reddit Heat Data...</span>
                 </div>
-            </main>
+            </div>
         </div>
     </div>
 </div>
+
+<script src="/static/bubble_map.js"></script>
 {% endblock %}

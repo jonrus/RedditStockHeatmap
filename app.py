@@ -42,8 +42,12 @@ def get_reddit_heat_by_date(date, cutoff = 1):
 def root_route():
     newest = RedditHeat.query.order_by(RedditHeat.date.desc()).first()
     oldest = RedditHeat.query.order_by(RedditHeat.date).first()
-    return render_template("root.html", newest_data_date = str(newest.date)[:10], oldest_data_date = str(oldest.date)[:10])
+    return render_template("bubble_map.html", newest_data_date = str(newest.date)[:10], oldest_data_date = str(oldest.date)[:10])
     
+@app.route("/sym/<sym>")
+def view_symbol_route(sym):
+    return render_template("line_chart.html", symbol = sym)
+
 @app.route("/about")
 def about_route():
     # TODO: This route
@@ -73,3 +77,19 @@ def api_bydate_route(date):
     """Returns the data for the given date"""
     heat_limit = int(request.args.get('heat', 1))
     return jsonify(get_reddit_heat_by_date(date=date, cutoff= heat_limit))
+
+@app.route("/api/sym/<sym>", methods = ["GET"])
+def api_symbol_data(sym):
+    found_sym = Symbol.query.filter_by(symbol=sym).first()
+    if found_sym == None:
+        res_data = {"error" : f"ERROR!! Unable to find any data for symbol - {sym}!"}
+    else:
+        res_data = {
+            "chart" : {
+                "title" : f"{found_sym.name}({found_sym.symbol}) - Reddit Heat over time"
+            },
+            "data" : []
+        }
+        for item in found_sym.heat:
+            res_data['data'].append([str(item.date)[:10], item.heat])
+    return jsonify(res_data)

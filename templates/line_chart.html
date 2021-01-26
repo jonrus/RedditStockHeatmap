@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{symbol}} | Reddit Heat Index{% endblock %}
+
+{% block page_content %}
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<div class="container">
+    <div class="row">
+        <div class="col-lg">
+            <div id="lineChart">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading Reddit Heat Data...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="symName" hidden>{{symbol}}</div>
+<script src="/static/line_chart.js"></script>
+{% endblock %}
