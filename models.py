@@ -32,16 +32,6 @@ class Symbol(db.Model):
 
     def __repr__(self):
         return f"<Symbol: {self.symbol}, name: {self.name}>"
-    
-# class SymbolPrice(db.Model):
-#     """Model to map Symbol to a dates, open/closing price"""
-
-#     __tablename__ = "symbols_prices"
-
-#     id = db.Column(db.Integer, primary_key = True, autoincrement = True, nullable = False)
-#     date = db.Column(db.DateTime, nullable = False)
-#     open = db.Column(db.Float(precision = 2), nullable = False)
-#     close = db.Column(db.Float(precision = 2), nullable = False)
 
 class RedditHeat(db.Model):
     """RedditHeat model for a ticker symbol

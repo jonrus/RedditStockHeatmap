@@ -1,16 +1,20 @@
-async function getLatest() {
-    let res = await axios.get("/api/latest");
-    return res.data;
+async function fetchFilterData(event) {
+    event.preventDefault();
+    const data_date = document.getElementById("startDatePicker").value;
+    const heat_limit = document.getElementById("minRedditHeat").value;
+    let res = await axios.get(`/api/date/${data_date}?heat=${heat_limit}`);
+    //TODO: ADD error handling - Show user when they get no results with their limits, etc
+    buildBubbleChart(res.data);
 }
 
-async function buildChart() {
+function buildBubbleChart(formData) {
     dataset = {
-        "children": await getLatest()
+        "children": formData
     }
 
     document.getElementById("bubbleMap").innerHTML = '';
 
-    const diameter = 900;
+    const diameter = 870;
     var color = d3.scaleOrdinal(d3.schemeCategory20);
 
     var bubble = d3.pack(dataset)
@@ -71,7 +75,7 @@ async function buildChart() {
             .attr("dy", ".2em")
             .style("text-anchor", "middle")
             .text(function(d) {
-                if (d.data.Name.length > 16) {
+                if (d.data.Name.length > 14) {
                     return d.data.Name.substring(0, d.r / 3) + "...";
                 }
                 return d.data.Name;
@@ -98,5 +102,8 @@ async function buildChart() {
         .style("height", diameter + "px");
 }
 
-
-document.addEventListener("DOMContentLoaded", buildChart);
+//////////////////////////
+// Event Listeners
+//////////////////////////
+document.addEventListener("DOMContentLoaded", fetchFilterData); // Perform first data fetch after page loads
+document.getElementById("submitFilterForm").addEventListener("click", fetchFilterData);

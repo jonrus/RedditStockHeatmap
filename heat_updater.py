@@ -12,6 +12,7 @@ if reddit.get_token():
     for stock in all_stocks:
         total_heat = 0
         for sub in all_subs:
+            #TODO: add auto update current date
             date_to_start = "2021-01-22 00:00:00+0000" # For our use, should be one day prior to date_to_find
             date_to_find = "2021-01-21 00:00:00+0000"
             res = reddit.search_slice(term = stock.name, subreddit = sub.name, start_time = date_to_start, end_time = date_to_find)

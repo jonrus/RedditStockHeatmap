@@ -3,5 +3,30 @@
 {% block page_title %}Reddit Heat Index{% endblock %}
 
 {% block page_content %}
-<main id="bubbleMap"></main>
+<div class="container">
+    <div class="row">
+        <div class="col-md">
+            <form>
+                <div class="mb-3">
+                  <label for="startDatePicker" class="form-label">Show Reddit Heat for the chosen date.</label>
+                  <input type="date" class="form-control" id="startDatePicker" aria-describedby="startDateHelp" min="{{oldest_data_date}}" max="{{newest_data_date}}" value="{{newest_data_date}}">
+                  <div id="startDateHelp" class="form-text"><p>Only dates with data are valid</p><p>Data prior to 01/22/2020 is random seed data!</p></div>
+                </div>
+                <div class="mb-3">
+                  <label for="minRedditHeat" class="form-label">Minimum Reddit Heat</label>
+                  <input type="number" class="form-control" id="minRedditHeat" min="1", max="100" value="1">
+                  <div id="minRedditHeatHelp" class="form-text">Only show stocks with this heat or greater.</div>
+                </div>
+                <button type="submit" class="btn btn-primary" id="submitFilterForm">Fetch</button>
+              </form>
+        </div>
+        <div class="col-lg">
+            <main id="bubbleMap">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading Reddit Heat Data...</span>
+                </div>
+            </main>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,6 +1,6 @@
 import os
 from datetime import date
-from flask import Flask, render_template, jsonify, request, flash, redirect, session
+from flask import Flask, render_template, jsonify, request#, flash, redirect, session # Uncomment as start to use
 from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
 import Settings.secret as secret
@@ -40,9 +40,24 @@ def get_reddit_heat_by_date(date, cutoff = 1):
 #***********************************
 @app.route("/")
 def root_route():
-    return render_template("root.html")
+    newest = RedditHeat.query.order_by(RedditHeat.date.desc()).first()
+    oldest = RedditHeat.query.order_by(RedditHeat.date).first()
+    return render_template("root.html", newest_data_date = str(newest.date)[:10], oldest_data_date = str(oldest.date)[:10])
     
+@app.route("/about")
+def about_route():
+    # TODO: This route
+    return "to do"
 
+@app.route("/signup")
+def signup_route():
+    # TODO: This route
+    return "to do"
+
+@app.route("/login")
+def login_route():
+    # TODO: This route
+    return "to do"
 
 #***********************************
 #* API Style Routes
@@ -50,12 +65,11 @@ def root_route():
 @app.route("/api/latest", methods = ["GET"])
 def api_latest_route():
     """Returns the newest (by date) complete set of Reddit Heat data as JSON"""
-    return jsonify(get_reddit_heat_by_date("2021-01-21"))
+    newest = RedditHeat.query.order_by(RedditHeat.date.desc()).first()
+    return jsonify(get_reddit_heat_by_date(str(newest.date)[:10]))
 
-
-#***********************************
-#* Testing Routes
-#***********************************
-@app.route("/render_all")
-def render_all_route():
-    import pdb; pdb.set_trace()
+@app.route("/api/date/<date>", methods = ["GET"])
+def api_bydate_route(date):
+    """Returns the data for the given date"""
+    heat_limit = int(request.args.get('heat', 1))
+    return jsonify(get_reddit_heat_by_date(date=date, cutoff= heat_limit))

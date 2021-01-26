@@ -1,7 +1,6 @@
 """Basic Reddit API wrapper, provides search and search_until a datatime"""
 import requests
 import requests.auth
-import Settings.secret as secret #!Remove once testing is complete
 import Helpers.helpers as helpers
 
 class RedditSearch():
@@ -296,9 +295,3 @@ class RedditSearch():
                     },
                     "thing_data" : return_item
                 }
-
-
-if __name__ == "__main__": #!Remove once testing is complete
-    reddit = RedditSearch(secret.client_id, secret.client_secret, secret.user_agent, secret.device_id)
-    reddit.get_token()
-    results = reddit.search_until(term = "TSLA", subreddit = "investing", until = "2021-01-20 00:00:00+0000")
