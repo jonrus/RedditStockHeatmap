@@ -5,7 +5,6 @@ import Helpers.helpers as helpers
 
 class RedditSearch():
     """This Reddit API wrapper, is bare bones and provides autherzation and search features only."""
-    #TODO: Add __repr__()
     #TODO: Add token experation checker/updater
 
     def __init__(self, client_id, client_secret, user_agent, device_id):
@@ -22,6 +21,9 @@ class RedditSearch():
 
         #*Update session headers
         self.session_client.headers.update({"User-Agent" : self.user_agent})
+
+    def __repr__(self):
+        return f"<RedditSearch obj: Authorized: {self.authorized}"
 
     def get_token(self):
         """Uses the 'Application Only OAuth' method to get a token from reddit.
@@ -64,7 +66,12 @@ class RedditSearch():
 
         # Check if sort is an okay value
         if sort not in ['relevance', 'hot', 'top', 'new', 'comments']:
-            return False #TODO Return a dict - will cause error on search_until
+            res = {}
+            res['res_data'] = {
+                "count" : 0,
+                "error" : "Sort value error; Sort must be one of 'relevance', 'hot', 'top', 'new' or 'comments'"
+            }
+            return res
         
         # Construct search params
         params = {
@@ -80,7 +87,12 @@ class RedditSearch():
 
         # Simple check and return false if the request was unable to complete
         if res.status_code != requests.codes.ok:
-            return False #TODO Return a dict - will cause error on search_until
+            res = {}
+            res['res_data'] = {
+                "count" : 0,
+                "error" : f"HTTP Error - Code: {res.status_code}"
+            }
+            return res
 
         # Convert results to JSON
         j = res.json() #TODO Add Error Catch
@@ -134,14 +146,14 @@ class RedditSearch():
 
         # Debug Printing
         if verbose:
-            # print(f"Generated URL: {j['res_data']['url']}")
+            print(f"Generated URL: {j['res_data']['url']}")
             print(f"Rate Limit Used: {j['res_data']['rate_limit_used']}")
             print(f"Rate Limit Remain: {j['res_data']['rate_limit_remain']}")
             print(f"Rate Limit Reset: {j['res_data']['rate_limit_reset']}")
-            # print(f"Response Headers: {j['res_data']['headers']}")
-            # print(f"First Thing: {j['res_data']['first_thing']}")
-            # print(f"Last Thing: {j['res_data']['last_thing']}")
-            # print(f"Response Text: {res.text}")
+            print(f"Response Headers: {j['res_data']['headers']}")
+            print(f"First Thing: {j['res_data']['first_thing']}")
+            print(f"Last Thing: {j['res_data']['last_thing']}")
+            print(f"Response Text: {res.text}")
             print(f"Results: {j['res_data']['count']}")
 
         return j
@@ -257,7 +269,6 @@ class RedditSearch():
                     },
                     "thing_data" : None
                 }
-            #TODO: Wiggle
             # Check if we found a thing as old OR older than we're looking for
             if search_res['res_data']['last_thing_created_utc'] <= until:
                 found = True
@@ -288,7 +299,7 @@ class RedditSearch():
                     "res_data" : {
                         "thing" : return_item['data']['name'],
                         "thing_time" : return_item['data']['created_utc'],
-                        "searc_time" : until,
+                        "search_time" : until,
                         "thing_time_readable" : helpers.readable_time(return_item['data']['created_utc']),
                         "total_found" : total_found,
                         "error" : None
