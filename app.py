@@ -84,12 +84,15 @@ def api_symbol_data(sym):
     if found_sym == None:
         res_data = {"error" : f"ERROR!! Unable to find any data for symbol - {sym}!"}
     else:
+        #! Remove below before deployment
+        heat_data = RedditHeat.query.filter_by(symbol_id=found_sym.id).order_by(RedditHeat.date).all()
         res_data = {
             "chart" : {
                 "title" : f"{found_sym.name}({found_sym.symbol}) - Reddit Heat over time"
             },
             "data" : []
         }
-        for item in found_sym.heat:
+        for item in heat_data: #! Remove before deployment
+        # form item in found_sym.heat:
             res_data['data'].append([str(item.date)[:10], item.heat])
     return jsonify(res_data)
