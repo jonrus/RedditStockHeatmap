@@ -7,7 +7,7 @@ bcrypt = Bcrypt()
 
 class Subreddit(db.Model):
     """Subreddit model"""
-
+    # subreddit names are letters only, no spaces. No checking is done here
     __tablename__ = "subreddits"
 
     id = db.Column(db.Integer, autoincrement = True, nullable = False, primary_key = True)
