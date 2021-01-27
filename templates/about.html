@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block page_title %}About | Reddit Heat Index{% endblock %}
+
+{% block page_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingOne">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      What is this project?
+                    </button>
+                  </h2>
+                  <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <p><strong>This is the S&P 500 Reddit Heat Index.</strong></p>
+                      <p>All S&P 500 stock symbols are tracked for their daily post count, on several subreddits. This count is their Heat Index, that is displayed here. On the main page, a zero axis bubble map is used to display the symbols and their Heat Index. Clicking on a ticker symbol will display a line graph of Heat Index over time.</p>
+                      <p>The following subreddits are tracked
+                          <ul>
+                              <li><a href="https://www.reddit.com/r/investing/">r/investing</a></li>
+                              <li><a href="https://www.reddit.com/r/stocks">r/stocks</a></li>
+                              <li><a href="https://www.reddit.com/r/wallstreetbets">r/wallstreetbets</a></li>
+                              <li><a href="https://www.reddit.com/r/robinhood">r/robinhood</a></li>
+                          </ul>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingTwo">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      When is the Heat Index updated?
+                    </button>
+                  </h2>
+                  <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <p><strong>Daily at 0200 UTC</strong></p>
+                      <p>The update is for the previous days worth of data. Thus the Heat Index is always one day behind.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      Who made this?
+                    </button>
+                  </h2>
+                  <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <p><strong>Jon Russell</strong></p>
+                      <p>I'm currently enrolled in a Software Engineering bootcamp, and this is one of my projects.</p>
+                      <p><a href="https://github.com/jonrus/RedditStockHeatmap"><i class="fab fa-github fa-3x"></i></a><a href="https://www.linkedin.com/in/jonathantrussell/"><i class="fab fa-linkedin fa-3x"></i></a></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                      How valid is the data?
+                    </button>
+                  </h2>
+                  <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <p><strong>This is not investment advice!</strong></p>
+                      <p>Due to the way data is collected, some stock symbols will be over and/or under represented.</p>
+                      <p>There is no validation performed on the data. This project simply searches Reddit for a stock symbol. Thus symbols that are normal english words will return more results than those that are not.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="accordion-item">
+                  <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                      Is this the best method of getting Reddit data?
+                    </button>
+                  </h2>
+                  <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="headingFive" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                      <p><strong>No, no it's not.</strong></p>
+                      <p>Using, Reddits search api and updating once per day, limits the total results displayed. In a perfect world, I would use a live stream of posts and comments and tally data from there. In an effort to stay within the confines of my assignment I've implemented a daily update.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
