@@ -1,8 +1,9 @@
 import os
 from datetime import date
-from flask import Flask, render_template, jsonify, request#, flash, redirect, session # Uncomment as start to use
-# from flask_debugtoolbar import DebugToolbarExtension #* Uncomment to use
+from flask import Flask, render_template, jsonify, request, redirect, session #, flash # Uncomment as start to use
+from flask_debugtoolbar import DebugToolbarExtension #* Uncomment to use
 from models import db, connect_db, Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
+import forms
 import Settings.secret as secret
 
 app = Flask(__name__)
@@ -14,7 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secret.flask_secret_key)
-# toolbar = DebugToolbarExtension(app) #* Uncomment to use
+toolbar = DebugToolbarExtension(app) #* Uncomment to use
 
 connect_db(app)
 
@@ -30,7 +31,8 @@ def get_reddit_heat_by_date(date, cutoff = 1):
                 {
                     "Name" : stock.symbol.name,
                     "Count" : stock.heat,
-                    "Symbol" : stock.symbol.symbol
+                    "Symbol" : stock.symbol.symbol,
+                    "id" : stock.id
                 }
             )
     return heat_data
@@ -46,21 +48,58 @@ def root_route():
     
 @app.route("/sym/<sym>")
 def view_symbol_route(sym):
+    #TODO: Add symbol ID, for use in api_symbol_data()???
     return render_template("line_chart.html", symbol = sym)
 
 @app.route("/about")
 def about_route():
     return render_template("about.html")
 
-@app.route("/signup")
+#***********************************
+#* User Routes
+#***********************************
+@app.route("/user/signup", methods = ["GET", "POST"])
 def signup_route():
-    # TODO: This route?
+    if "uname" in session:
+        return redirect("/")
+
+    user_form = forms.UserForm()
+    if user_form.validate_on_submit():
+        username = user_form.username.data
+        password = User.hash_pwd(user_form.password.data) #* Perform password hash
+
+        new_user = User(username = username, pw_hash = password)
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        # Add uname to session
+        session['uname'] = new_user.username
+        
+        return redirect("/")
+    return render_template("sign_up.html", form = user_form)
+
+@app.route("/user/login")
+def login_route():
+    # TODO: This route
     return "to do"
 
-@app.route("/login")
-def login_route():
-    # TODO: This route?
-    return "to do"
+@app.route("/user/stocks")
+def user_stocks_route():
+    if "uname" not in session:
+        return redirect("/")
+    #TODO: This route
+
+@app.route("/user/search")
+def user_custom_search_route():
+    if "uname" not in session:
+        return redirect("/")
+    #TODO: This route
+
+@app.route("/user/logout")
+def user_logout_route():
+    session.pop("uname")
+    return redirect("/")
 
 #***********************************
 #* API Style Routes

@@ -66,10 +66,11 @@ class RedditSearch():
 
         # Check if sort is an okay value
         if sort not in ['relevance', 'hot', 'top', 'new', 'comments']:
-            res = {}
-            res['res_data'] = {
-                "count" : 0,
-                "error" : "Sort value error; Sort must be one of 'relevance', 'hot', 'top', 'new' or 'comments'"
+            res = {
+                "res_data" : {
+                    "count" : 0,
+                    "error" : "Sort value error; Sort must be one of 'relevance', 'hot', 'top', 'new' or 'comments'"
+                }
             }
             return res
         
@@ -87,12 +88,16 @@ class RedditSearch():
 
         # Simple check and return false if the request was unable to complete
         if res.status_code != requests.codes.ok:
-            res = {}
-            res['res_data'] = {
-                "count" : 0,
-                "error" : f"HTTP Error - Code: {res.status_code}"
+            http_error_res = {
+                "res_data" : {
+                    "count" : 0,
+                    "error" : f"HTTP Error - Code: {res.status_code}",
+                    "term" : term,
+                    "subreddit" : subreddit,
+                    "url" : res.url
+                }
             }
-            return res
+            return http_error_res
 
         # Convert results to JSON
         j = res.json() #TODO Add Error Catch

@@ -66,16 +66,59 @@ class Index(db.Model):
         return f"<Index: {self.symbol}, {self.name}>"
 
 class User(db.Model):
-    """User model - stores user info as well as helper methods to hash and auth a user"""
+    """User model - stores user info as well as the auth and hash_pwd  classmethods"""
     
     __tablename__ = "users"
 
     id = db.Column(db.Integer, autoincrement = True, primary_key = True)
     username = db.Column(db.String(100), unique = True, nullable = False)
     pw_hash = db.Column(db.Text, nullable = False)
-    email = db.Column(db.String(300), nullable = True)
+    email = db.Column(db.String(300), nullable = True) #* Not asking for at signup but leaving in the model
     symbols = db.relationship("Symbol", secondary = "users_symbols")
-    #TODO: Add Methods
+
+    def __repr__(self):
+        return f"<User Obj: {self.username}"
+
+    @classmethod
+    def auth(cls, username, password):
+        """
+        Classmethod:
+            Looks for the user with the given username and if user exists checks password provided to DB
+        Usage:
+            User.auth("username", "password")
+            username and password are expcted to be strings
+        Returns:
+            If a user is found AND the password is correct returns the user object,
+            False on username not found OR password incorrect
+        Caution:
+            No error checking of any sort is completed in this function
+        """
+        user = User.query.filter_by(username = username).first()
+        bcrypt = Bcrypt()
+
+        if user and bcrypt.check_password_hash(user.password, password):
+            return user
+        else:
+            return False
+    
+    @classmethod
+    def hash_pwd(cls, pwd):
+        """
+        Classmethod:
+            Uses [flask] Bcrypt to hash a supplied password and return a string [utf-8] of that password
+        Usage:
+            User.hash_pwd("password as a string")
+        Returns:
+            utf-8 string of hashed password
+        Caution:
+            No error checking of any sort is completed here. It's assumed the error checking is made via other methods
+            prior to calling this function, i.e. by WTForms
+        """
+
+        bcrypt = Bcrypt()
+        temp_hashed = bcrypt.generate_password_hash(pwd)
+
+        return temp_hashed.decode("utf8")
 
 class UserSymbol(db.Model):
     """Models user's tracked symbols"""
