@@ -1,7 +1,7 @@
 import os
 from datetime import date
-from flask import Flask, render_template, jsonify, request, redirect, session #, flash # Uncomment as start to use
-from flask_debugtoolbar import DebugToolbarExtension #* Uncomment to use
+from flask import Flask, render_template, jsonify, request, redirect, session, flash
+from flask_debugtoolbar import DebugToolbarExtension
 from models import db, connect_db, Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
 import forms
 import Settings.secret as secret
@@ -15,7 +15,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secret.flask_secret_key)
-toolbar = DebugToolbarExtension(app) #* Uncomment to use
+toolbar = DebugToolbarExtension(app)
 
 connect_db(app)
 
@@ -92,6 +92,8 @@ def login_route():
         if user:
             session['uname'] = user.username
             return redirect("/")
+        else:
+            flash("Invalid credentials.", 'danger')
 
     return render_template("user.html", form = user_form, btn_text = "Log In!")
 
