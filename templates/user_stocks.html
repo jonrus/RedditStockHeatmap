@@ -3,14 +3,36 @@
 {% block page_title %}My Stocks | Reddit Heat Index{% endblock %}
 
 {% block page_content %}
+<script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
 <div class="container">
+    <div class="row">
+        <div class="col-sm">
+            <form>
+                  <label for="startDatePicker" class="form-label">Show Reddit Heat for the chosen date.</label>
+                  <input type="date" class="form-control" id="startDatePicker" aria-describedby="startDateHelp" min="{{oldest_data_date}}" max="{{newest_data_date}}" value="{{newest_data_date}}">
+                  <div id="startDateHelp" class="form-text"><p>Only dates with data are valid</p><p>Data prior to and including 01/20/2020 is random seed data!</p></div>
+                  <label for="minRedditHeat" class="form-label">Minimum Reddit Heat</label>
+                  <input type="number" class="form-control" id="minRedditHeat" min="1", max="100" value="1">
+                  <div id="minRedditHeatHelp" class="form-text">Only show stocks with this heat or greater.</div>
+                  <input type="hidden" id="UserName" value="{{session['uname']}}">
+                <button type="submit" class="btn btn-primary" id="submitFilterForm">Fetch</button>
+              </form>
+        </div>
+        <div class="col-lg-10">
+            <div id="bubbleMap">
+                <div class="spinner-border text-success" role="status">
+                    <span class="visually-hidden">Loading Reddit Heat Data...</span>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-sm">
           Untracked Stocks
           <ul>
           {% for sym in all_stocks %}
             {% if sym not in user_stocks %}
-            <li><a href="/sym/{{sym.symbol}}">({{sym.symbol}})</a> - {{sym.name}} <a href="/user/stocks/add/{{sym.id}}">Track</a></li>
+            <li><a href="/sym/{{sym.symbol}}">({{sym.symbol}})</a> - {{sym.name}} <a href="/user/stocks/add/{{sym.id}}" class="link-info"><i class="fas fa-plus-circle"></i></a></li>
             {% endif %}
           {% endfor %}
           </ul>
@@ -19,10 +41,12 @@
           Tracked Stocks
           <ul>
           {% for sym in user_stocks %}
-            <li><a href="/sym/{{sym.symbol}}">({{sym.symbol}})</a> - {{sym.name}} <a href="/user/stocks/remove/{{sym.id}}">UnTrack</a></li>
+            <li><a href="/sym/{{sym.symbol}}">({{sym.symbol}})</a> - {{sym.name}} <a href="/user/stocks/remove/{{sym.id}}" class="link-danger"><i class="fas fa-ban"></i></a></li>
           {% endfor %}
           </ul>
         </div>
     </div>
 </div>
+<script src="/static/bubble_map.js"></script>
+<script src="/static/user_bubble_map.js"></script>
 {% endblock %}

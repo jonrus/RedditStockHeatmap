@@ -38,7 +38,7 @@ def get_reddit_heat_by_date(date, cutoff = 1):
     return heat_data
 
 #***********************************
-#* Webview Routes
+#* Public Webview Routes
 #***********************************
 @app.route("/")
 def root_route():
@@ -101,10 +101,19 @@ def user_stocks_route():
     if "uname" not in session:
         return redirect("/")
 
+    newest = RedditHeat.query.order_by(RedditHeat.date.desc()).first()
+    oldest = RedditHeat.query.order_by(RedditHeat.date).first()
+
     #get all the stocks
     all_stocks = Symbol.query.order_by("symbol")
     user = User.query.filter_by(username = session['uname']).first_or_404()
-    return render_template("user_stocks.html", user_stocks = user.symbols, all_stocks = all_stocks)
+    return render_template(
+        "user_stocks.html",
+        user_stocks = user.symbols,
+        all_stocks = all_stocks,
+        newest_data_date = str(newest.date)[:10],
+        oldest_data_date = str(oldest.date)[:10]
+        )
 
 @app.route("/user/stocks/add/<int:sym_id>")
 def user_add_tracked_stockroute(sym_id):
@@ -115,6 +124,7 @@ def user_add_tracked_stockroute(sym_id):
     new_tracked_sym = UserSymbol(user_id = user.id, symbol_id = sym_id)
     db.session.add(new_tracked_sym)
     db.session.commit()
+    flash("Added stock to tracking list", "success")
     return redirect("/user/stocks")
 
 @app.route("/user/stocks/remove/<int:sym_id>")
@@ -125,6 +135,7 @@ def user_remove_tracked_stockroute(sym_id):
     user = User.query.filter_by(username = session['uname']).first_or_404()
     UserSymbol.query.filter_by(user_id = user.id).filter_by(symbol_id = sym_id).delete()
     db.session.commit()
+    flash("Removed stock from tracking list", "info")
     return redirect("/user/stocks")
 
 @app.route("/user/search")
@@ -136,8 +147,42 @@ def user_custom_search_route():
 @app.route("/user/logout")
 def user_logout_route():
     session.pop("uname")
+    flash("Logged Out", "success")
     return redirect("/")
 
+@app.route("/user/data")
+def user_data_route():
+    heat_limit = int(request.args.get('heat', 1))
+    date = request.args.get('date', None)
+    username = request.args.get("user", "")
+
+    if date == "" or username == None:
+        # Return an error...
+        return jsonify({
+            "error" : "Unable to fetch data for given date!"
+        })
+    
+    user = User.query.filter_by(username=username).first_or_404()
+    if len(user.symbols) == 0:
+        return jsonify({
+            "error": "Add a stock to be tracked"
+        })
+
+    heat_data = []
+    for sym in user.symbols:
+        for heat in sym.heat:
+            if str(heat.date)[:10] == date:
+                if heat.heat >= heat_limit:
+                    heat_data.append(
+                        {
+                            "Name" : heat.symbol.name,
+                            "Count" : heat.heat,
+                            "Symbol" : heat.symbol.symbol,
+                            "id" : heat.id
+                        }
+                    )
+    return jsonify(heat_data)
+    
 #***********************************
 #* API Style Routes
 #***********************************

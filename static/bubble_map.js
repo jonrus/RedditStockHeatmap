@@ -1,15 +1,3 @@
-async function fetchFilterData(event) {
-    event.preventDefault();
-
-    document.getElementById("bubbleMap").innerHTML = '<div class="spinner-border text-success" role="status"><span class="visually-hidden">Loading Reddit Heat Data...</span></div>';
-
-    const data_date = document.getElementById("startDatePicker").value;
-    const heat_limit = document.getElementById("minRedditHeat").value;
-    let res = await axios.get(`/api/date/${data_date}?heat=${heat_limit}`);
-    //TODO: ADD error handling - Show user when they get no results with their limits, etc
-    buildBubbleChart(res.data);
-}
-
 function buildBubbleChart(formData) {
     dataset = {
         "children": formData
@@ -104,9 +92,3 @@ function buildBubbleChart(formData) {
     d3.select(self.frameElement)
         .style("height", diameter + "px");
 }
-
-//////////////////////////
-// Event Listeners
-//////////////////////////
-document.addEventListener("DOMContentLoaded", fetchFilterData); // Perform first data fetch after page loads
-document.getElementById("submitFilterForm").addEventListener("click", fetchFilterData);

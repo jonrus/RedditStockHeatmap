@@ -48,8 +48,6 @@ class RedditHeat(db.Model):
     close_price = db.Column(db.Float(precision = 2), nullable = True)
     percent_change = db.Column(db.Float(precision = 2), nullable = True)
 
-
-
     def __repr__(self):
         return f"<RedditHeat: {self.date.month}/{self.date.day}/{self.date.year} {self.symbol.symbol} {self.heat}>"
 
