@@ -16,5 +16,3 @@ class UserForm(FlaskForm):
             Length(min = 6, max = 30, message = "Password must be between 6 and 30 characters.")
         ]
     )
-
-    

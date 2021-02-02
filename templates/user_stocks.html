@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block page_title %}My Stocks | Reddit Heat Index{% endblock %}
+
+{% block page_content %}
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+          Untracked Stocks
+          <ul>
+          {% for sym in all_stocks %}
+            {% if sym not in user_stocks %}
+            <li><a href="/sym/{{sym.symbol}}">({{sym.symbol}})</a> - {{sym.name}} <a href="/user/stocks/add/{{sym.id}}">Track</a></li>
+            {% endif %}
+          {% endfor %}
+          </ul>
+        </div>
+        <div class="col-sm">
+          Tracked Stocks
+          <ul>
+          {% for sym in user_stocks %}
+            <li><a href="/sym/{{sym.symbol}}">({{sym.symbol}})</a> - {{sym.name}} <a href="/user/stocks/remove/{{sym.id}}">UnTrack</a></li>
+          {% endfor %}
+          </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

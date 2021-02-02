@@ -13,8 +13,8 @@ def update_heat():
             total_heat = 0
             for sub in all_subs:
                 #TODO: add auto update current date
-                date_to_start = "2021-01-27 00:00:00+0000" # For our use, should be one day after to date_to_find
-                date_to_find = "2021-01-26 00:00:00+0000"
+                date_to_start = "2021-01-30 00:00:00+0000" # For our use, should be one day after to date_to_find
+                date_to_find = "2021-01-29 00:00:00+0000"
                 res = reddit.search_slice(
                     term = stock.name,
                     subreddit = sub.name,

@@ -88,7 +88,6 @@ def login_route():
     if user_form.validate_on_submit():
         user = User.auth(user_form.username.data, user_form.password.data)
 
-        #TODO: Add flash message for incorrect uname/pword?
         if user:
             session['uname'] = user.username
             return redirect("/")
@@ -101,7 +100,32 @@ def login_route():
 def user_stocks_route():
     if "uname" not in session:
         return redirect("/")
-    #TODO: This route
+
+    #get all the stocks
+    all_stocks = Symbol.query.order_by("symbol")
+    user = User.query.filter_by(username = session['uname']).first_or_404()
+    return render_template("user_stocks.html", user_stocks = user.symbols, all_stocks = all_stocks)
+
+@app.route("/user/stocks/add/<int:sym_id>")
+def user_add_tracked_stockroute(sym_id):
+    if "uname" not in session:
+        return redirect("/")
+
+    user = User.query.filter_by(username = session['uname']).first_or_404()
+    new_tracked_sym = UserSymbol(user_id = user.id, symbol_id = sym_id)
+    db.session.add(new_tracked_sym)
+    db.session.commit()
+    return redirect("/user/stocks")
+
+@app.route("/user/stocks/remove/<int:sym_id>")
+def user_remove_tracked_stockroute(sym_id):
+    if "uname" not in session:
+        return redirect("/")
+
+    user = User.query.filter_by(username = session['uname']).first_or_404()
+    UserSymbol.query.filter_by(user_id = user.id).filter_by(symbol_id = sym_id).delete()
+    db.session.commit()
+    return redirect("/user/stocks")
 
 @app.route("/user/search")
 def user_custom_search_route():
