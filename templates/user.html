@@ -4,7 +4,7 @@
 
 {% block page_content %}
 <div class="container">
-    <form action="/user/signup" method="POST">
+    <form method="POST">
         {{ form.hidden_tag() }}
         <div class="row mb-3">
           {{form.username.label(class="col-sm-2 col-form-label")}}
@@ -28,7 +28,7 @@
                 {% endfor %}
           </div>
         </div>
-        <button type="submit" class="btn btn-primary">Sign Up!</button>
+        <button type="submit" class="btn btn-primary">{{btn_text}}</button>
       </form>
 </div>
 {% endblock %}

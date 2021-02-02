@@ -96,7 +96,7 @@ class User(db.Model):
         user = User.query.filter_by(username = username).first()
         bcrypt = Bcrypt()
 
-        if user and bcrypt.check_password_hash(user.password, password):
+        if user and bcrypt.check_password_hash(user.pw_hash, password):
             return user
         else:
             return False

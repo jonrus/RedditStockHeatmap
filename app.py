@@ -77,12 +77,23 @@ def signup_route():
         session['uname'] = new_user.username
         
         return redirect("/")
-    return render_template("sign_up.html", form = user_form)
+    return render_template("user.html", form = user_form, btn_text = "Sign Up!")
 
-@app.route("/user/login")
+@app.route("/user/login", methods = ["GET", "POST"])
 def login_route():
-    # TODO: This route
-    return "to do"
+    if "uname" in session:
+        return redirect("/")
+
+    user_form = forms.UserForm()
+    if user_form.validate_on_submit():
+        user = User.auth(user_form.username.data, user_form.password.data)
+
+        #TODO: Add flash message for incorrect uname/pword?
+        if user:
+            session['uname'] = user.username
+            return redirect("/")
+
+    return render_template("user.html", form = user_form, btn_text = "Log In!")
 
 @app.route("/user/stocks")
 def user_stocks_route():
