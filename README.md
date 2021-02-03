@@ -1,5 +1,6 @@
 # Reddit Stock Heatmap
-This app, searches Reddit for the number of time a stock symbol is found, creating a value called 'Reddit Heat Index' for the current (as of 01/20/2021) S&P 500 Index stocks. The values are displayed on a daily (UTC based) heatmap, for stocks with at least one Reddit search hit. 
+This app, searches Reddit for the number of time a stock symbol is found, creating a value called 'Reddit Heat Index' for the current (as of 01/20/2021) S&P 500 Index stocks. The values are displayed on a daily (UTC based) heatmap, for stocks with at least one Reddit search hit.
+See a [live version](https://reddit-heatmap.herokuapp.com/) of the app deployed to [Heroku](https://www.heroku.com/) - Note data may or may not be current and updates may or may not continue based on usage limits.
 ## Database Schema
 - [Layout](Database%20Schema/db.png)
 ## API(s) Used
