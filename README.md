@@ -22,6 +22,7 @@ This app, searches Reddit for the number of time a stock symbol is found, creati
 - [GitHub](https://github.com/jonrus/RedditStockHeatmap)
 - Deployment
   - [Heroku](https://www.heroku.com/)
+  - [Gunicorn](https://gunicorn.org/)
 ## Screen Shots
 - [Main Page](Screens/MainPage.png)
 - [User Limited Stock Heatmap](Screens/CustomList.png)
