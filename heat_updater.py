@@ -3,8 +3,9 @@ import Helpers.helpers as helpers
 import Settings.secret as secret
 from app import db
 from models import db, connect_db, Subreddit, Symbol, RedditHeat
+import time
 
-def update_heat():
+def update_heat(date_to_find, date_to_start):
     reddit = RedditSearch(secret.client_id, secret.client_secret, secret.user_agent, secret.device_id)
     if reddit.get_token():
         all_stocks = Symbol.query.all()
@@ -12,9 +13,6 @@ def update_heat():
         for stock in all_stocks:
             total_heat = 0
             for sub in all_subs:
-                #TODO: add auto update current date
-                date_to_start = "2021-01-31 00:00:00+0000" # For our use, should be one day after to date_to_find
-                date_to_find = "2021-01-30 00:00:00+0000"
                 res = reddit.search_slice(
                     term = stock.name,
                     subreddit = sub.name,
@@ -34,4 +32,8 @@ def update_heat():
             db.session.commit()
     
 if __name__ == "__main__":
-    update_heat()
+    now = round(time.time()) + 0.0
+    start_date = time.strftime("%Y-%m-%d 00:00:00+0000", time.gmtime(now))
+    find_date = time.strftime("%Y-%m-%d 00:00:00+0000", time.gmtime(now - 86400.0)) #* Subtract 1 day.
+
+    update_heat(find_date, start_date)
