@@ -1,7 +1,7 @@
 import os
 from datetime import date
 from flask import Flask, render_template, jsonify, request, redirect, session, flash
-from flask_debugtoolbar import DebugToolbarExtension
+# from flask_debugtoolbar import DebugToolbarExtension #! Uncomment to use
 from models import db, connect_db, Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
 import forms
 import Settings.secret as secret
@@ -13,9 +13,9 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
-app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', secret.flask_secret_key)
-toolbar = DebugToolbarExtension(app)
+# app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False #! Uncomment to use
+# toolbar = DebugToolbarExtension(app) #! Uncomment to use
 
 connect_db(app)
 

@@ -6,6 +6,11 @@ from models import db, connect_db, Subreddit, Symbol, RedditHeat
 import time
 
 def update_heat(date_to_find, date_to_start):
+    """Dates are expected to look like;
+    YYYY-MM-DD hh:mm:ss+Timezone
+    i.e.
+    2021-01-20 00:00:00+0000
+    By default all searches are done at 00:00:00+0000 of whatever date."""
     reddit = RedditSearch(secret.client_id, secret.client_secret, secret.user_agent, secret.device_id)
     if reddit.get_token():
         all_stocks = Symbol.query.all()
