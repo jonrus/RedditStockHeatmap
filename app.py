@@ -142,7 +142,7 @@ def user_remove_tracked_stockroute(sym_id):
 def user_custom_search_route():
     if "uname" not in session:
         return redirect("/")
-    #TODO: This route
+    #TODO: This route?
 
 @app.route("/user/logout")
 def user_logout_route():
