@@ -1,6 +1,6 @@
 from RedditSearch import RedditSearch
 import Helpers.helpers as helpers
-import Settings.secret as secret
+import Settings.get_secrets as secret
 from app import db
 from models import db, connect_db, Subreddit, Symbol, RedditHeat
 import time

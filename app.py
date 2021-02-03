@@ -4,7 +4,7 @@ from flask import Flask, render_template, jsonify, request, redirect, session, f
 # from flask_debugtoolbar import DebugToolbarExtension #! Uncomment to use
 from models import db, connect_db, Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
 import forms
-import Settings.secret as secret
+import Settings.get_secrets as secret
 
 app = Flask(__name__)
 
