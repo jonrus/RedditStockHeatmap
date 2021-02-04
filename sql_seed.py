@@ -1,6 +1,8 @@
 from app import db
 from models import Subreddit, Symbol, RedditHeat, Index, User, UserSymbol
 from random import randint
+import Settings.get_secrets as secret
+
 
 db.drop_all()
 db.create_all()
@@ -280,12 +282,20 @@ s_and_p_500 = [ # List end line 281'ish
     ("ZTS", "Zoetis", nyse.id)
 ]
 
-seed_dates = [
-    "2021-01-01", "2021-01-02", "2021-01-03", "2021-01-04", "2021-01-05",
-    "2021-01-06", "2021-01-07", "2021-01-08", "2021-01-09", "2021-01-10",
-    "2021-01-11", "2021-01-12", "2021-01-13", "2021-01-14", "2021-01-15",
-    "2021-01-16", "2021-01-17", "2021-01-18", "2021-01-19", "2021-01-20"
-]
+
+#Check if deployed to Heroku to limit the seed data
+if secret.deployed_to_heroku:
+    seed_dates = [
+        "2021-01-19", "2021-01-20"
+    ]
+else:
+    seed_dates = [
+        "2021-01-01", "2021-01-02", "2021-01-03", "2021-01-04", "2021-01-05",
+        "2021-01-06", "2021-01-07", "2021-01-08", "2021-01-09", "2021-01-10",
+        "2021-01-11", "2021-01-12", "2021-01-13", "2021-01-14", "2021-01-15",
+        "2021-01-16", "2021-01-17", "2021-01-18", "2021-01-19", "2021-01-20"
+    ]
+
 # Add the symbols to the database
 # and create random heat for each symbol
 for (sym, co, idex) in s_and_p_500:

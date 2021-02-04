@@ -3,9 +3,9 @@
 import os
 
 # Check for the config var that tells us where to look
-deployed = os.environ.get('DEPLOYED_ON_HEROKU', False)
+deployed_to_heroku = os.environ.get('DEPLOYED_ON_HEROKU', False)
 
-if deployed:
+if deployed_to_heroku:
     client_id = os.environ.get('REDDIT_CLIENT_ID')
     client_secret = os.environ.get('REDDIT_CLIENT_SECRET')
     user_agent = os.environ.get('REDDIT_USER_AGENT')
