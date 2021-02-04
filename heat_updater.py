@@ -35,10 +35,20 @@ def update_heat(date_to_find, date_to_start):
             new_heat = RedditHeat(symbol_id = stock.id, date = date_to_find[:10], heat = total_heat) 
             db.session.add(new_heat)
             db.session.commit()
+
+def clean_up_db():
+    """This function will simply delete the oldest days worth of data from the RedditHeat table.
+    This is due to database limitations on Heroku's free tier (10,000 rows)
+    This does run the risk of dumping all data, and not having any if for some reason reddit searches fail..."""
+    if secret.deployed_to_heroku:
+        oldest = RedditHeat.query.order_by(RedditHeat.date).first()
+        RedditHeat.query.filter_by(date=oldest.data).delete()
+
     
 if __name__ == "__main__":
     now = round(time.time()) + 0.0
     start_date = time.strftime("%Y-%m-%d 00:00:00+0000", time.gmtime(now))
     find_date = time.strftime("%Y-%m-%d 00:00:00+0000", time.gmtime(now - 86400.0)) #* Subtract 1 day.
 
+    clean_up_db()
     update_heat(find_date, start_date)
