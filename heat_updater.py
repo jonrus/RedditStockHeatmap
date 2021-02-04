@@ -42,7 +42,7 @@ def clean_up_db():
     This does run the risk of dumping all data, and not having any if for some reason reddit searches fail..."""
     if secret.deployed_to_heroku:
         oldest = RedditHeat.query.order_by(RedditHeat.date).first()
-        RedditHeat.query.filter_by(date=oldest.data).delete()
+        RedditHeat.query.filter_by(date=oldest.date).delete()
 
     
 if __name__ == "__main__":
