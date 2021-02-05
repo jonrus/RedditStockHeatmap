@@ -14,7 +14,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
 app.config['SECRET_KEY'] = secret.flask_secret_key
-print(f"key: {app.config['SECRET_KEY']}")
 # app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False #! Uncomment to use
 # toolbar = DebugToolbarExtension(app) #! Uncomment to use
 
